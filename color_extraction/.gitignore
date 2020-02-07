@@ -1,0 +1,5 @@
+.vscode/
+*.pyc
+*.DS_Store
+AISpeaker/secret.json
+.vscode/settings.json
