@@ -1,0 +1,68 @@
+{% load static %}
+<html>
+<head>
+    <title>Image Color Extractor</title>
+    <script src="{% static "imageExtraction.js" %}"></script>
+    <script>
+
+        var hexToString = function (value) {
+            var hex = value.toString(16);
+            hex = "000000".substr(0, 6 - hex.length) + hex;
+            return hex;
+        }
+
+        window.onload = function () {
+            var canvas = document.getElementById("imgCanvas");
+            var ctx = canvas.getContext("2d");
+            var img = document.getElementById("scream");
+            ctx.drawImage(img, 0, 0);
+            var imgArgs = {
+                imageData: ctx.getImageData(0, 0, canvas.width, canvas.height),
+                width: canvas.width,
+                height: canvas.height,
+                swatchCount: 5,
+                colorMood: "Colorful",
+            };
+            var extracted = extractColorFromImage(imgArgs.imageData, imgArgs.width, imgArgs.height, imgArgs.swatchCount, imgArgs.colorMood);
+            console.log(extracted);
+
+            rgbs_and_points = {
+               rgbs:[],
+               points:extracted.points
+            };
+            extracted.finalColor.forEach(function(p){
+                rgbs_and_points.rgbs.push(p.rgb);
+            });
+            console.log(rgbs_and_points);
+
+            var paragraph = document.getElementById("result");
+
+            rgbs_and_points.rgbs.forEach(rgb => {
+                HEXRGB = hexToString(((rgb.r * 255) << 16) 
+                        | ((rgb.g * 255) << 8)
+                        | ((rgb.b * 255) >>> 0));
+
+                var rect = document.createElement("div");
+                rect.style.backgroundColor = HEXRGB;
+                rect.style.width = 30;
+                rect.style.height = 30;
+                paragraph.appendChild(rect);
+            })
+            //rgb.r, rgb.g, rgb.b에 255를 곱하고 SHIFT하고 OR하여
+            //16진수로 변환하고 STRING으로 변환하여라.
+        }
+    </script>
+</head>
+<body>
+
+    <p>Image to use:</p>
+    <img id="scream" width="220" height="277" src="{% static "img_the_scream.jpg" %}" alt="The Scream">
+
+    <p>Result:</p>
+    <div id="result"></div>
+    <canvas id="imgCanvas" width="220" height="277" style="border:1px solid #d3d3d3;">
+        Your browser does not support the HTML5 canvas tag.
+    </canvas>
+</body>
+
+</html>
